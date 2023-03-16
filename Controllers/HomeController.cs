@@ -32,10 +32,12 @@ namespace MvcModelValidationApp.Controllers
         public IActionResult UserInfo(User user)
         {
             string result;
+            if (user.Name == user.Email)
+                ModelState.AddModelError("", "Email и Name не должны совпадать");
             if (ModelState.IsValid)
                 result = $"User info: Name {user.Name}, Age {user.Age}";
             else
-                result = "Non valid user data";
+                return View(user);
 
             result += $"\n";
             foreach (var item in ModelState)
@@ -46,6 +48,14 @@ namespace MvcModelValidationApp.Controllers
                 
 
             return Content(result);
+        }
+
+        [AcceptVerbs("Get", "Post")]
+        public IActionResult CheckCode(string code)
+        {
+            if (code == "12345" || code == "55555")
+                return Json(true);
+            return Json(false);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
